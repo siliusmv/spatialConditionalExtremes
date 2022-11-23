@@ -1,0 +1,11 @@
+
+# Compiled c-files
+*.so
+*.o
+*/a.out
+
+*.DS_Store
+
+
+# some data objects
+cgeneric-data
