@@ -21,7 +21,7 @@
 #'   So if e.g. a column has 3 NA variables, then we remove these, and then we compute
 #'   the likelihood for a (d-3)-dimensional Gaussian random variable.
 dconditional_no_beta <- function(x, A, b, sigma0, nugget, logd = TRUE, na_rm = TRUE) {
-    .Call(`_posteriorAdjustment_dconditional_no_beta`, x, A, b, sigma0, nugget, logd, na_rm)
+    .Call(`_spatialConditionalExtremes_dconditional_no_beta`, x, A, b, sigma0, nugget, logd, na_rm)
 }
 
 #' Compute the (log-)likelihood of the conditional extremes distribution when
@@ -42,10 +42,10 @@ dconditional_no_beta <- function(x, A, b, sigma0, nugget, logd = TRUE, na_rm = T
 #'   So if e.g. a column has 3 NA variables, then we remove these, and then we compute
 #'   the likelihood for a (d-3)-dimensional Gaussian random variable.
 dconditional <- function(x, A, B, sigma0, nugget, logd = TRUE, na_rm = TRUE) {
-    .Call(`_posteriorAdjustment_dconditional`, x, A, B, sigma0, nugget, logd, na_rm)
+    .Call(`_spatialConditionalExtremes_dconditional`, x, A, B, sigma0, nugget, logd, na_rm)
 }
 
 dconditional2 <- function(x, A, B, B2, sigma0, nugget, logd = TRUE, na_rm = TRUE) {
-    .Call(`_posteriorAdjustment_dconditional2`, x, A, B, B2, sigma0, nugget, logd, na_rm)
+    .Call(`_spatialConditionalExtremes_dconditional2`, x, A, B, B2, sigma0, nugget, logd, na_rm)
 }
 

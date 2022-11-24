@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // dconditional_no_beta
 arma::vec dconditional_no_beta(arma::mat const& x, arma::sp_mat const& A, arma::vec const& b, arma::mat const& sigma0, double const nugget, bool const logd, bool const na_rm);
-RcppExport SEXP _posteriorAdjustment_dconditional_no_beta(SEXP xSEXP, SEXP ASEXP, SEXP bSEXP, SEXP sigma0SEXP, SEXP nuggetSEXP, SEXP logdSEXP, SEXP na_rmSEXP) {
+RcppExport SEXP _spatialConditionalExtremes_dconditional_no_beta(SEXP xSEXP, SEXP ASEXP, SEXP bSEXP, SEXP sigma0SEXP, SEXP nuggetSEXP, SEXP logdSEXP, SEXP na_rmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -30,7 +30,7 @@ END_RCPP
 }
 // dconditional
 arma::vec dconditional(arma::mat const& x, arma::sp_mat const& A, arma::mat const& B, arma::mat const& sigma0, double const nugget, bool const logd, bool const na_rm);
-RcppExport SEXP _posteriorAdjustment_dconditional(SEXP xSEXP, SEXP ASEXP, SEXP BSEXP, SEXP sigma0SEXP, SEXP nuggetSEXP, SEXP logdSEXP, SEXP na_rmSEXP) {
+RcppExport SEXP _spatialConditionalExtremes_dconditional(SEXP xSEXP, SEXP ASEXP, SEXP BSEXP, SEXP sigma0SEXP, SEXP nuggetSEXP, SEXP logdSEXP, SEXP na_rmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,7 +47,7 @@ END_RCPP
 }
 // dconditional2
 arma::vec dconditional2(arma::mat const& x, arma::sp_mat const& A, arma::mat const& B, arma::mat const& B2, arma::mat const& sigma0, double const nugget, bool const logd, bool const na_rm);
-RcppExport SEXP _posteriorAdjustment_dconditional2(SEXP xSEXP, SEXP ASEXP, SEXP BSEXP, SEXP B2SEXP, SEXP sigma0SEXP, SEXP nuggetSEXP, SEXP logdSEXP, SEXP na_rmSEXP) {
+RcppExport SEXP _spatialConditionalExtremes_dconditional2(SEXP xSEXP, SEXP ASEXP, SEXP BSEXP, SEXP B2SEXP, SEXP sigma0SEXP, SEXP nuggetSEXP, SEXP logdSEXP, SEXP na_rmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -65,13 +65,13 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_posteriorAdjustment_dconditional_no_beta", (DL_FUNC) &_posteriorAdjustment_dconditional_no_beta, 7},
-    {"_posteriorAdjustment_dconditional", (DL_FUNC) &_posteriorAdjustment_dconditional, 7},
-    {"_posteriorAdjustment_dconditional2", (DL_FUNC) &_posteriorAdjustment_dconditional2, 8},
+    {"_spatialConditionalExtremes_dconditional_no_beta", (DL_FUNC) &_spatialConditionalExtremes_dconditional_no_beta, 7},
+    {"_spatialConditionalExtremes_dconditional", (DL_FUNC) &_spatialConditionalExtremes_dconditional, 7},
+    {"_spatialConditionalExtremes_dconditional2", (DL_FUNC) &_spatialConditionalExtremes_dconditional2, 8},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_posteriorAdjustment(DllInfo *dll) {
+RcppExport void R_init_spatialConditionalExtremes(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

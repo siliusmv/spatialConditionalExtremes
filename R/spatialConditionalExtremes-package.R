@@ -1,6 +1,6 @@
 
 ## usethis namespace: start
-#' @useDynLib posteriorAdjustment, .registration = TRUE
+#' @useDynLib spatialConditionalExtremes, .registration = TRUE
 ## usethis namespace: end
 NULL
 

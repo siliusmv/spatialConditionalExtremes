@@ -1,4 +1,4 @@
-Package: posteriorAdjustment
+Package: spatialConditionalExtremes
 Version: 0.0.0.9000
 Encoding: UTF-8
 LazyData: true
