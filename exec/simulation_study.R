@@ -18,12 +18,9 @@ rho = 40 # Range of the Matérn correlation
 n_posterior_samples = 1e5 # Number of samples from posterior for estimating credible interval
 spde_alpha = 1.5
 thinning = c(1, 2, 4, 8, 16)
-my_index = 105 # Used for fitting a single-site model to data, and performing some plotting
 
 filename = file.path(results_dir(), "simulation.rds")
 if (!file.exists(filename)) saveRDS(list(), filename)
-#small_fits_filename = file.path(results_dir(), "simulation_small_fits.rds")
-#if (!file.exists(small_fits_filename)) saveRDS(list(), small_fits_filename)
 
 # Create a regular grid of coordinates, similar to the case study
 n_xy = 100
@@ -116,7 +113,6 @@ loglik = function(theta,
                   dist_to_s0_from_mesh,
                   A,
                   spdes,
-                  use_beta = TRUE,
                   verbose = FALSE,
                   sum_terms = TRUE,
                   n_cores = 1) {
@@ -207,7 +203,7 @@ multimesh_data = purrr::transpose(multimesh_data)
 # Plot an example of the locations used for performing inference for a given
 # conditioning site, together with a display of the triangular mesh
 plot = local({
-  i = my_index
+  i = 105
   df = as.data.frame(coords[data$obs_index[[i]], ]) |>
     dplyr::mutate(tag = "Used")
   df2 = as.data.frame(coords[-c(data$obs_index[[i]], data$s0_index[[i]]), ]) |>
@@ -387,206 +383,12 @@ tmp = readRDS(filename)
 tmp$inla = fit
 saveRDS(tmp, filename)
 
-# # ==============================================================================
-# # Fit a single-site model to the data
-# # ==============================================================================
-# 
-# set.seed(1)
-# single_site_indices = c(my_index, sample.int(length(s0_index), 5))
-# 
-# single_site_fits = list()
-# for (i in seq_along(single_site_indices)) {
-# 
-#   # extract data from only one conditioning site
-#   mydata = lapply(data, `[`, single_site_indices[i])
-#   my_multimesh_data = lapply(multimesh_data, `[`, single_site_indices[i])
-# 
-#   y_inla = unlist(mydata$y)
-#   dist_to_s0_inla = mydata$dist_to_s0[rep(seq_along(mydata$n), mydata$n)]
-#   y0_inla = rep(unlist(mydata$y0), sapply(dist_to_s0_inla, length))
-#   dist_to_s0_inla = unlist(dist_to_s0_inla)
-# 
-#   a_model = a_model(
-#     y0 = y0_inla,
-#     dist_to_s0 = dist_to_s0_inla,
-#     init = est$par[2:3],
-#     priors = a_priors)
-# 
-#   spde_model = spde_b_model_simulation(
-#     n = mydata$n,
-#     y0 = unlist(mydata$y0),
-#     spde = my_multimesh_data$spde,
-#     init = est$par[4:8],
-#     priors = spde_priors,
-#     dist_to_s0 = my_multimesh_data$dist)
-# 
-#   inla_data = local({
-#     A = list()
-#     pb = progress_bar(length(mydata$n))
-#     for (i in seq_along(mydata$n)) {
-#       location_index = rep(mydata$obs_index[[i]], mydata$n[i])
-#       A[[i]] = inla.spde.make.A(
-#         my_multimesh_data$spde[[i]]$mesh,
-#         loc = coords[mydata$obs_index[[i]], ],
-#         index = rep(seq_along(mydata$obs_index[[i]]), mydata$n[i]),
-#         repl = rep(seq_len(mydata$n[i]), each = length(mydata$obs_index[[i]])))
-#       # Account for the constraining method
-#       n_spde = my_multimesh_data$spde[[i]]$n.spde
-#       ii = which(my_multimesh_data$dist[[i]] == 0)
-#       ii = (0:(mydata$n[i] - 1)) * n_spde + ii
-#       A[[i]] = A[[i]][, -ii]
-#       pb$tick()
-#     }
-#     pb$terminate()
-#     A = Matrix::bdiag(A)
-#     n_per_col = tail(A@p, -1) - head(A@p, -1)
-#     ii = which(n_per_col > 0)
-#     A = A[, ii]
-#     A = cbind(A, Diagonal(length(y_inla), 1))
-#     data = list(
-#       y = y_inla,
-#       spatial = c(ii, rep(NA, length(y_inla))),
-#       idx = c(rep(NA, length(ii)), seq_along(y_inla)))
-#     list(A = A, data = data)
-#   })
-# 
-#   single_site_fits[[i]] = inla(
-#     formula = formula,
-#     data = inla_data$data,
-#     control.predictor = list(A = inla_data$A),
-#     control.family = list(hyper = list(prec = list(
-#       initial = est$par[1],
-#       prior = "pc.prec",
-#       param = c(1, .05)))),
-#     only.hyperparam = TRUE,
-#     control.inla = list(
-#       control.vb = list(enable = FALSE),
-#       int.strategy = "eb"),
-#     control.compute = list(config = TRUE),
-#     num.threads = 1,
-#     inla.mode = "experimental")
-# 
-#   single_site_fits[[i]] = inla.rerun(single_site_fits[[i]])
-# 
-#   # Keep only the relevant parts of the model fit, to reduce requirements on file storage
-#   single_site_fits[[i]] = list(
-#     misc = single_site_fits[[i]]$misc,
-#     internal.marginals.hyperpar = single_site_fits[[i]]$internal.marginals.hyperpar,
-#     mode = single_site_fits[[i]]$mode,
-#     cpu = single_site_fits[[i]]$cpu,
-#     index = single_site_indices[i],
-#     s0_index = s0_index[single_site_indices[i]],
-#     summary.hyperpar = single_site_fits[[i]]$summary.hyperpar)
-#   single_site_fits[[i]]$misc$reordering = NULL
-#   single_site_fits[[i]]$misc$family = NULL
-#   single_site_fits[[i]]$misc$linkfunctions = NULL
-#   class(single_site_fits[[i]]) = "inla"
-# 
-#   message("Progress: ", i, " / ", length(single_site_indices))
-# }
-# 
-# tmp = readRDS(filename)
-# tmp$single_site_fits = single_site_fits
-# saveRDS(tmp, filename)
-# 
-# # # extract data from only one conditioning site
-# # mydata = lapply(data, `[`, my_index)
-# # my_multimesh_data = lapply(multimesh_data, `[`, my_index)
-# # 
-# # y_inla = unlist(mydata$y)
-# # dist_to_s0_inla = mydata$dist_to_s0[rep(seq_along(mydata$n), mydata$n)]
-# # y0_inla = rep(unlist(mydata$y0), sapply(dist_to_s0_inla, length))
-# # dist_to_s0_inla = unlist(dist_to_s0_inla)
-# # 
-# # a_model = a_model(
-# #   y0 = y0_inla,
-# #   dist_to_s0 = dist_to_s0_inla,
-# #   init = est$par[2:3],
-# #   priors = a_priors)
-# # 
-# # spde_model = spde_b_model_simulation(
-# #   n = mydata$n,
-# #   y0 = unlist(mydata$y0),
-# #   spde = my_multimesh_data$spde,
-# #   init = est$par[4:8],
-# #   priors = spde_priors,
-# #   dist_to_s0 = my_multimesh_data$dist)
-# # 
-# # inla_data = local({
-# #   A = list()
-# #   pb = progress_bar(length(mydata$n))
-# #   for (i in seq_along(mydata$n)) {
-# #     location_index = rep(mydata$obs_index[[i]], mydata$n[i])
-# #     A[[i]] = inla.spde.make.A(
-# #       my_multimesh_data$spde[[i]]$mesh,
-# #       loc = coords[mydata$obs_index[[i]], ],
-# #       index = rep(seq_along(mydata$obs_index[[i]]), mydata$n[i]),
-# #       repl = rep(seq_len(mydata$n[i]), each = length(mydata$obs_index[[i]])))
-# #     # Account for the constraining method
-# #     n_spde = my_multimesh_data$spde[[i]]$n.spde
-# #     ii = which(my_multimesh_data$dist[[i]] == 0)
-# #     ii = (0:(mydata$n[i] - 1)) * n_spde + ii
-# #     A[[i]] = A[[i]][, -ii]
-# #     pb$tick()
-# #   }
-# #   pb$terminate()
-# #   A = Matrix::bdiag(A)
-# #   n_per_col = tail(A@p, -1) - head(A@p, -1)
-# #   ii = which(n_per_col > 0)
-# #   A = A[, ii]
-# #   A = cbind(A, Diagonal(length(y_inla), 1))
-# #   data = list(
-# #     y = y_inla,
-# #     spatial = c(ii, rep(NA, length(y_inla))),
-# #     idx = c(rep(NA, length(ii)), seq_along(y_inla)))
-# #   list(A = A, data = data)
-# # })
-# # 
-# # single_site_fit = inla(
-# #   formula = formula,
-# #   data = inla_data$data,
-# #   control.predictor = list(A = inla_data$A),
-# #   control.family = list(hyper = list(prec = list(
-# #     initial = est$par[1],
-# #     prior = "pc.prec",
-# #     param = c(1, .05)))),
-# #   only.hyperparam = TRUE,
-# #   control.inla = list(
-# #     control.vb = list(enable = FALSE),
-# #     int.strategy = "eb"),
-# #   control.compute = list(config = TRUE),
-# #   verbose = TRUE,
-# #   num.threads = 1,
-# #   inla.mode = "experimental")
-# # 
-# # single_site_fit = inla.rerun(single_site_fit)
-# # 
-# # # Keep only the relevant parts of the model fit, to reduce requirements on file storage
-# # single_site_fit = list(
-# #   misc = single_site_fit$misc,
-# #   internal.marginals.hyperpar = single_site_fit$internal.marginals.hyperpar,
-# #   mode = single_site_fit$mode,
-# #   cpu = single_site_fit$cpu,
-# #   summary.hyperpar = single_site_fit$summary.hyperpar)
-# # single_site_fit$misc$reordering = NULL
-# # single_site_fit$misc$family = NULL
-# # single_site_fit$misc$linkfunctions = NULL
-# # class(single_site_fit) = "inla"
-# # 
-# # tmp = readRDS(filename)
-# # tmp$single_site_inla = single_site_fit
-# # saveRDS(tmp, filename)
-
 # ==============================================================================
 # Compute the C matrix
 # ==============================================================================
 fit = readRDS(filename)$inla
-#single_site_fit = readRDS(filename)$single_site_inla
-#single_site_fits = readRDS(filename)$single_site_fits
 
 H = solve(fit$misc$cov.intern)
-#H_single_site = solve(single_site_fit$misc$cov.intern)
-#H_single_site = lapply(single_site_fits, function(x) solve(x$misc$cov.intern))
 
 grads = loglik_grad(
   theta = fit$mode$theta,
@@ -598,6 +400,7 @@ grads = loglik_grad(
   n_cores = n_cores,
   spdes = multimesh_data$spde,
   sum_terms = FALSE)
+
 # Estimate J. We know that all time points are independent
 times = unlist(data$time_index)
 J = 0
@@ -608,64 +411,11 @@ for (k in seq_along(times)) {
   }
 }
 
-# J_single_site = lapply(
-#   X = seq_along(single_site_fits),
-#   FUN = function(i) {
-#     mydata = lapply(data, `[`, single_site_fits[[i]]$index)
-#     my_multimesh_data = lapply(multimesh_data, `[`, single_site_fits[[i]]$index)
-#     grads = loglik_grad(
-#       theta = single_site_fits[[i]]$mode$theta,
-#       y = mydata$y,
-#       y0 = mydata$y0,
-#       dist_to_s0 = mydata$dist_to_s0,
-#       dist_to_s0_from_mesh = my_multimesh_data$dist,
-#       A = my_multimesh_data$A,
-#       n_cores = n_cores,
-#       spdes = my_multimesh_data$spde,
-#       sum_terms = FALSE)
-#     mytimes = unlist(mydata$time_index)
-#     J = 0
-#     for (k in seq_along(mytimes)) {
-#       index = which(mytimes == mytimes[k])
-#       for (j in index) {
-#         J = J + grads[k, ] %*% grads[j, , drop = FALSE]
-#       }
-#     }
-#     J
-#   })
-
-#single_site_grads = loglik_grad(
-#  theta = single_site_fit$mode$theta,
-#  y = mydata$y,
-#  y0 = mydata$y0,
-#  dist_to_s0 = mydata$dist_to_s0,
-#  dist_to_s0_from_mesh = my_multimesh_data$dist,
-#  A = my_multimesh_data$A,
-#  n_cores = n_cores,
-#  spdes = my_multimesh_data$spde,
-#  sum_terms = FALSE)
-#
-#mytimes = unlist(mydata$time_index)
-#J_single_site = 0
-#for (k in seq_along(mytimes)) {
-#  index = which(mytimes == mytimes[k])
-#  for (j in index) {
-#    J_single_site = J_single_site + single_site_grads[k, ] %*% single_site_grads[j, , drop = FALSE]
-#  }
-#}
-
 # Compute the estimate for C
 C = get_C(H, J)
-#C_single_site = get_C(H_single_site, J_single_site)
-#C_single_site = lapply(
-#  X = seq_along(single_site_fits),
-#  FUN = function(i) {
-#    get_C(H_single_site[[i]], J_single_site[[i]])
-#  })
 
 tmp = readRDS(filename)
 tmp$C = C
-#tmp$C_single_site = C_single_site
 saveRDS(tmp, filename)
 
 # ==============================================================================
@@ -674,10 +424,7 @@ saveRDS(tmp, filename)
 
 tmp = readRDS(filename)
 C = tmp$C
-#C_single_site = tmp$C_single_site
 fit = tmp$inla
-#single_site_fit = tmp$single_site_inla
-#single_site_fits = tmp$single_site_fits
 rm(tmp)
 
 # Estimate credible intervals
@@ -692,28 +439,6 @@ samples$adjusted = matrix(
   data = rep(fit$mode$theta, each = n_posterior_samples),
   ncol = n_theta)
 samples$adjusted = samples$adjusted + (samples$unadjusted - samples$adjusted) %*% t(C)
-#for (i in seq_along(single_site_fits)) {
-#  name1 = paste0("unadjusted_single_", i)
-#  name2 = paste0("adjusted_single_", i)
-#  samples[[name1]] = inla.hyperpar.sample(
-#    n = n_posterior_samples,
-#    result = single_site_fits[[i]],
-#    intern = TRUE)
-#  samples[[name2]] = matrix(
-#    data = rep(single_site_fits[[i]]$mode$theta, each = n_posterior_samples),
-#    ncol = n_theta)
-#  samples[[name2]] = samples[[name2]] +
-#    (samples[[name1]] - samples[[name2]]) %*% t(C_single_site[[i]])
-#}
-#samples$unadjusted_single = inla.hyperpar.sample(
-#  n = n_posterior_samples,
-#  result = single_site_fit,
-#  intern = TRUE)
-#samples$adjusted_single = matrix(
-#  data = rep(single_site_fit$mode$theta, each = n_posterior_samples),
-#  ncol = n_theta)
-#samples$adjusted_single = samples$adjusted_single +
-#  (samples$unadjusted_single - samples$adjusted_single) %*% t(C_single_site)
 for (i in seq_along(samples)) {
   samples[[i]] = exp(samples[[i]])
   samples[[i]][, 6] = samples[[i]][, 6] / (1 + samples[[i]][, 6])
@@ -725,41 +450,19 @@ plot = local({
   df1 = as.data.frame(samples$unadjusted)
   names(df1) = theta_names
   df1$adjusted = "Unadjusted"
-  #df1$composite = "Composite"
   df2 = as.data.frame(samples$adjusted)
   names(df2) = theta_names
   df2$adjusted = "Adjusted"
-  #df2$composite = "Composite"
-  #df3 = as.data.frame(samples$unadjusted_single)
-  #names(df3) = theta_names
-  #df3$adjusted = "Unadjusted"
-  #df3$composite = "Single-site"
-  #df4 = as.data.frame(samples$adjusted_single)
-  #names(df4) = theta_names
-  #df4$adjusted = "Adjusted"
-  #df4$composite = "Single-site"
   rbind(df1, df2) |>
-    #tidyr::pivot_longer(-c(adjusted, composite)) |>
     tidyr::pivot_longer(-adjusted) |>
     dplyr::mutate(
       name = factor(name, levels = theta_names),
       adjusted = factor(adjusted, levels = c("Unadjusted", "Adjusted"))) |>
-    #dplyr::filter(
-    #  !(name == theta_names[1] & (value < 15 | value > 28)),
-    #  !(name == theta_names[2] & (value < 10 | value > 17.5)),
-    #  !(name == theta_names[3] & (value < 1 | value > 1.5)),
-    #  !(name == theta_names[4] & (value < 1.3 | value > 1.9)),
-    #  !(name == theta_names[5] & (value < 58 | value > 82)),
-    #  !(name == theta_names[6] & (value < .4 | value > 1)),
-    #  !(name == theta_names[7] & (value < 5 | value > 14)),
-    #  !(name == theta_names[8] & (value < .3 | value > 1.2))) |>
     ggplot() +
-    #geom_density(aes(x = value, linetype = adjusted, col = composite), trim = TRUE) +
     geom_density(aes(x = value, linetype = adjusted)) +
     facet_wrap(~name, scales = "free", nrow = 2) +
     labs(linetype = "", col = "", x = "Parameter value", y = "Posterior density") +
     theme_light() +
-    #scale_color_manual(values = c("black", "darkgray")) +
     scale_linetype_manual(values = c("longdash", "solid")) +
     theme(
       text = element_text(size = 15),
@@ -774,7 +477,7 @@ tikz_plot(file.path(image_dir(), "simulation-posteriors.pdf"),
 
 simulate_data = function(samples, n_samples, n_samples_per_theta) {
   n_samples = min(n_samples, nrow(samples))
-  my_s0_index = s0_index[my_index]
+  my_s0_index = s0_index[105]
   my_coords = extract_thinned_out_circles(
     coords = coords,
     center = coords[my_s0_index, ],

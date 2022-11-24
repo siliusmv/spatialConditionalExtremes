@@ -157,7 +157,6 @@ loglik = function(theta,
                   dist_to_s0_from_mesh,
                   A,
                   spdes,
-                  use_beta = TRUE,
                   verbose = FALSE,
                   sum_terms = TRUE,
                   n_cores = 1) {
@@ -167,7 +166,7 @@ loglik = function(theta,
   kappa = exp(theta[3])
   log_sigma = theta[4]
   log_rho = theta[5]
-  s0 = exp(theta[6])
+  b0 = exp(theta[6])
   lambda_b = exp(theta[7])
   kappa_b = exp(theta[8])
   Q = lapply(spdes, INLA::inla.spde2.precision, theta = c(log_rho, log_sigma))
@@ -184,7 +183,7 @@ loglik = function(theta,
     matrix(a, nrow = length(dist), ncol = length(y))
   }
   b_func = function(y, dist) {
-    sd = 1 + s0 * exp(-(dist / lambda_b)^kappa_b)
+    sd = 1 + b0 * exp(-(dist / lambda_b)^kappa_b)
     matrix(rep(sd, length(y)), nrow = length(dist), ncol = length(y))
   }
   res = loglik_conditional(
