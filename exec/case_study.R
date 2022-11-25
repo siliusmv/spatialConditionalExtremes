@@ -213,12 +213,6 @@ loglik_grad = function(theta, sum_terms = TRUE, ...) {
   res
 }
 
-# Compute the Hessian of the log-likelihood using numerical derivation
-loglik_hess = function(theta, ...) {
-  res = numDeriv::hessian(loglik, theta, ...)
-  res
-}
-
 # Choose all conditioning sites for computing the composite MLE
 # ==============================================================================
 
@@ -496,14 +490,14 @@ plot = local({
     tidyr::pivot_longer(-tag) |>
     dplyr::mutate(name = factor(name, levels = theta_names)) |>
     dplyr::filter(
-      !(name == theta_names[1] & (value < 0 | value > 150)),
+      !(name == theta_names[1] & (value < 0 | value > 300)),
       !(name == theta_names[2] & (value < 0 | value > 12)),
       !(name == theta_names[3] & (value < 0 | value > 2.5)),
       !(name == theta_names[4] & (value < 1.5 | value > 3)),
       !(name == theta_names[5] & (value < 8 | value > 21)),
       !(name == theta_names[6] & (value < 1 | value > 5)),
-      !(name == theta_names[7] & (value < 2.5 | value > 7)),
-      !(name == theta_names[8] & (value < .3 | value > 1.5))) |>
+      !(name == theta_names[7] & (value < 3.5 | value > 7)),
+      !(name == theta_names[8] & (value < .3 | value > 1.4))) |>
     ggplot() +
     geom_density(aes(x = value, linetype = tag), trim = TRUE) +
     facet_wrap(~name, scales = "free", nrow = 2) +
