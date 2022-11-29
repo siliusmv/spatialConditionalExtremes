@@ -1,13 +1,10 @@
 devtools::load_all()
 library(microbenchmark)
-library(mvtnorm)
-library(mvnfast)
 library(sf)
-library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(INLA)
-library(inlabru)
+library(pbapply)
 
 # In this script we evaluate the speed and correctness of the Rcpp functions used
 # for computing log-likelihoods for the spatial conditional extremes model.
@@ -217,6 +214,3 @@ apply(ll[, 3:4], 1, function(x) max(x) - min(x)) |>
 # Compare the computation times. The Rcpp functions are considerably faster than the R functions
 times = sapply(results, `[[`, "time")
 times
-
-
-lll = do.call(loglik, args)
