@@ -97,76 +97,6 @@ loglik_conditional = function(y,
   unlist(res)
 }
 
-#' @export
-loglik_conditional2 = function(y,
-                              y0,
-                              a_func,
-                              b_func,
-                              Q,
-                              tau,
-                              dist_to_s0,
-                              dist_to_s0_from_mesh,
-                              A,
-                              n_cores = 1,
-                              na.rm = TRUE,
-                              wrong_order = FALSE,
-                              use_r = FALSE) {
-  # Compute covariance matrices
-  if (!is.list(Q)) Q = list(Q)
-  Sigma = lapply(Q, function(q) as.matrix(Matrix::solve(q)))
-  if (length(Sigma) == 1) Sigma = rep(Sigma, length(y0))
-  # Ensure that the input has correct lengths/dimensions
-  lengths = c(
-    length(y0), length(y), length(A),
-    length(dist_to_s0), length(dist_to_s0_from_mesh), length(Sigma))
-  stopifnot(all(lengths == lengths[1]))
-  stopifnot(all(sapply(A, nrow) == sapply(dist_to_s0, length)))
-  stopifnot(all(sapply(A, ncol) == sapply(dist_to_s0_from_mesh, length)))
-
-  # Compute the log-likelihood, possibly in parallel
-  res = parallel::mclapply(
-    X = seq_along(A),
-    mc.cores = n_cores,
-    FUN = function(i) {
-      # Compute b
-      b = b_func(y0[[i]], dist_to_s0_from_mesh[[i]])
-      #b2 = b_func(y0[[i]], dist_to_s0[[i]])
-      b2 = a_func(y0[[i]], dist_to_s0[[i]])
-
-      # Do the values of b depend on y or are they constant given the distance?
-      const_b = all(apply(b, 1, function(x) length(unique(x)) == 1))
-
-      # Create a list of arguments that are used for computing the log-likelihood
-      args = list(
-        x = y[[i]] - a_func(y0[[i]], dist_to_s0[[i]]),
-        A = A[[i]],
-        sigma0 = Sigma[[i]],
-        nugget = 1 / tau,
-        logd = TRUE,
-        na_rm = na.rm)
-
-      # If b does not depend on y, we can speed up computations considerably by using
-      # a different function for computing the log-likelihood
-      if (wrong_order) {
-        args$B = b2
-        func = dconditional_r3
-      } else {
-        if (const_b) {
-          args$b = b[, 1]
-          func = ifelse(use_r, dconditional_r_no_beta, dconditional_no_beta)
-        } else {
-          args$B = b
-          args$B2 = b2
-          func = ifelse(use_r, dconditional_r2, dconditional2)
-        }
-      }
-
-      # Perform the actual computations
-      as.numeric(do.call(func, args))
-    })
-  unlist(res)
-}
-
 #' Compute the (log-)likelihood of the conditional extremes distribution when
 #' a and b are given. We assume that a has already been subtracted from x,
 #' i.e. x = (y - a) for some observations y.
@@ -217,44 +147,6 @@ dconditional_r = function(x,
 
   res
 }
-
-dconditional_r2 = function(x,
-                           A,
-                           B,
-                           B2,
-                           sigma0,
-                           nugget,
-                           logd = TRUE,
-                           na_rm = TRUE) {
-  m = nrow(B)
-  n = ncol(x)
-  res = rep(NA_real_, n)
-
-  # Loop over all columns in x
-  for (i in 1:ncol(x)) {
-
-    # Compute the value of sigma given B[, i]
-    B_tmp = Matrix::Diagonal(m, B[, i])
-    sigma = as.matrix(A %*% B_tmp %*% sigma0 %*% B_tmp %*% Matrix::t(A)) +
-      diag(nugget * B2[, i]^2)
-    #sigma = as.matrix(A %*% B_tmp %*% (sigma0 * 1 / (1 + nugget)) %*% B_tmp %*% Matrix::t(A)) +
-    #  diag(nugget / (1 + nugget) * B2[, i]^2)
-
-
-    # Locate indices for all non-NA observations
-    if (na_rm) {
-      good_index = which(!is.na(x[, i]))
-    } else {
-      good_index = seq_along(x[, i])
-    }
-
-    # Compute the log-likelihood
-    res[i] = mvtnorm::dmvnorm(x[good_index, i], sigma = sigma[good_index, good_index], log = TRUE)
-  }
-
-  res
-}
-
 
 
 #' Compute the (log-)likelihood of the conditional extremes distribution when

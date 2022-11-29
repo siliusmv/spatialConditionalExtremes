@@ -160,7 +160,7 @@ loglik = function(theta,
     }
     res
   }
-  res = loglik_conditional2(
+  res = loglik_conditional(
     y = y,
     y0 = y0,
     a_func = a_func,

@@ -10,68 +10,6 @@ results_dir = function() file.path(data_dir(), "results")
 #' @export
 cgeneric_dir = function() file.path(here::here(), "cgeneric")
 
-mylapply = function(X, n_cores, FUN, seed = NULL, verbose = TRUE, ...) {
-  if (verbose) {
-    file = tempfile()
-    f = fifo(file, open = "w+b", blocking = TRUE)
-    on.exit(close(f))
-    on.exit(file.remove(file), add = TRUE)
-    pb = txtProgressBar(0, length(X), style = 3, width = getOption("width") - 40)
-    on.exit(close(pb), add = TRUE)
-    start_time = proc.time()[3]
-    progress = 0
-    setTxtProgressBar(pb, progress)
-
-    if (!is.null(seed)) {
-      old_kind = RNGkind("L'Ecuyer-CMRG")
-      on.exit(RNGkind(old_kind[1], old_kind[2], old_kind[3]), add = TRUE)
-      set.seed(seed)
-      parallel::mc.reset.stream()
-    }
-
-    p = parallel:::mcfork()
-    if (inherits(p, "masterProcess")) {
-      pid = Sys.getpid()
-      writeBin(pid, f)
-      while (progress < length(X)) {
-        readBin(f, double())
-        progress = progress + 1
-        time_diff = proc.time()[3] - start_time
-        eta_time = time_diff / progress * (length(X) - progress)
-        setTxtProgressBar(pb, progress)
-        cat(" time elapsed: ", format_seconds(time_diff), ", eta: ", format_seconds(eta_time))
-      }
-      cat("\n")
-      parallel:::mcexit()
-    } else {
-      child_pid = readBin(f, integer())
-      on.exit({
-        tryCatch(parallel:::rmChild(child_pid), error = function(e) NULL)
-        tryCatch(parallel:::rmChild(child_pid), error = function(e) NULL)
-        tryCatch(parallel:::rmChild(child_pid), error = function(e) NULL)
-      })
-    }
-  }
-
-  parallel::mclapply(
-    X = X,
-    FUN = function(...) {
-      res = FUN(...)
-      if (verbose) writeBin(1, f)
-      res
-    },
-    ...,
-    mc.cores = n_cores)
-}
-
-format_seconds = function(s) {
-  s = ceiling(s)
-  hours = floor(s / 3600)
-  minutes = floor(s / 60) - 60 * hours
-  seconds = s - 3600 * hours - 60 * minutes
-  sprintf("%02d:%02d:%02d", hours, minutes, seconds)
-}
-
 #' Compute the logarithm of the sum of the exponents of a vector x.
 #' This function is usable in settings where components x_i of x are so large/big that
 #' exp(x_i) = Inf, or exp(x_i) = 0

@@ -45,29 +45,10 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// dconditional2
-arma::vec dconditional2(arma::mat const& x, arma::sp_mat const& A, arma::mat const& B, arma::mat const& B2, arma::mat const& sigma0, double const nugget, bool const logd, bool const na_rm);
-RcppExport SEXP _spatialConditionalExtremes_dconditional2(SEXP xSEXP, SEXP ASEXP, SEXP BSEXP, SEXP B2SEXP, SEXP sigma0SEXP, SEXP nuggetSEXP, SEXP logdSEXP, SEXP na_rmSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat const& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< arma::sp_mat const& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< arma::mat const& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< arma::mat const& >::type B2(B2SEXP);
-    Rcpp::traits::input_parameter< arma::mat const& >::type sigma0(sigma0SEXP);
-    Rcpp::traits::input_parameter< double const >::type nugget(nuggetSEXP);
-    Rcpp::traits::input_parameter< bool const >::type logd(logdSEXP);
-    Rcpp::traits::input_parameter< bool const >::type na_rm(na_rmSEXP);
-    rcpp_result_gen = Rcpp::wrap(dconditional2(x, A, B, B2, sigma0, nugget, logd, na_rm));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_spatialConditionalExtremes_dconditional_no_beta", (DL_FUNC) &_spatialConditionalExtremes_dconditional_no_beta, 7},
     {"_spatialConditionalExtremes_dconditional", (DL_FUNC) &_spatialConditionalExtremes_dconditional, 7},
-    {"_spatialConditionalExtremes_dconditional2", (DL_FUNC) &_spatialConditionalExtremes_dconditional2, 8},
     {NULL, NULL, 0}
 };
 

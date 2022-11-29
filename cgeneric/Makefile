@@ -3,7 +3,7 @@ spde_helpers = smat-operations.c smat-operations.h spde-precision.c spde-precisi
 
 .PHONY: test clean all
 
-all: a.so b.so spatial_conditional_extremes.so
+all: a.so b.so
 
 a.so: a.c cgeneric.h
 	$(GCC) -Wall -fpic -O -c -o a.o a.c -lm
@@ -12,10 +12,6 @@ a.so: a.c cgeneric.h
 b.so: b.c cgeneric.h $(spde_helpers)
 	$(GCC) -Wall -fpic -O -c -o b.o b.c -lm
 	$(GCC) -shared -o b.so b.o -lm
-
-spatial_conditional_extremes.so: spatial_conditional_extremes.c cgeneric.h $(spde_helpers)
-	$(GCC) -Wall -fpic -O -c -o spatial_conditional_extremes.o spatial_conditional_extremes.c -lm
-	$(GCC) -shared -o spatial_conditional_extremes.so spatial_conditional_extremes.o -lm
 
 test: test1.c test2.c smat-operations.o spde-precision.o test-funcs.o cgeneric.h
 	$(GCC) -o test1.o test1.c smat-operations.o spde-precision.o test-funcs.o -lm

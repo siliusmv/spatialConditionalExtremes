@@ -59,27 +59,6 @@ arma::mat sigma_func(arma::sp_mat const &A,
   return res;
 }
 
-arma::mat sigma_func2(arma::sp_mat const &A,
-		      arma::vec const &b,
-		      arma::vec const &b2,
-		      arma::mat const &sigma,
-		      double const nugget) {
-  arma::mat res = sigma;
-  arma::uword const d = b.size();
-  arma::uword const n = A.n_rows;
-  for (arma::uword i = 0; i < d; ++i) {
-    for (arma::uword j = 0; j < d; ++j) {
-      res.at(j, i) *= b.at(i) * b.at(j);
-    }
-  }
-  res = A * res * A.t();
-  for (arma::uword i = 0; i < n; ++i) {
-    res.at(i, i) += nugget * b2.at(i) * b2.at(i);
-  }
-  return res;
-}
-
-
 //' Compute the (log-)likelihood of the conditional extremes distribution when
 //' a and b are given. We assume that a has already been subtracted from x,
 //' i.e. x = (y - a) for some observations y.
@@ -219,74 +198,6 @@ arma::vec dconditional(arma::mat const &x,
 
     // Compute sigma using the ith column of B
     sigma = sigma_func(A, B.col(i), sigma0, nugget);
-
-    if (na_rm) {
-      // Count all the elements of z that are not NA
-      count = 0;
-      for (arma::uword j = 0; j < d; ++j) {
-	if (!NumericVector::is_na(z(j))) {
-	  good_index(count) = j;
-	  ++count;
-	}
-      }
-
-      if (count != d) {
-	// If z contains NA variables, we need to remove these and compute the log-likelihood
-	// of the non-NA variables. This is computationally demanding as it requires the
-	// computation of another Cholesky factorisation
-	out(i) = dmvnorm_double_fast(z(good_index.head(count)),
-				     sigma(good_index.head(count), good_index.head(count)));
-      }
-    }
-
-    if (!na_rm || count == d) {
-      // If we don't care about removing NA variables, or z does not contain any NA variables,
-      // we can use the already computed Cholesky factorisation to compute the log-likelihood of z
-      out(i) = dmvnorm_double_fast(z, sigma);
-    }
-  }
-      
-  if (logd) {
-    return out;
-  } else {
-    return exp(out);
-  }
-}
-
-// [[Rcpp::export]]
-arma::vec dconditional2(arma::mat const &x,  
-			arma::sp_mat const &A,
-			arma::mat const &B,
-			arma::mat const &B2,
-			arma::mat const &sigma0,
-			double const nugget,
-			bool const logd = true,
-			bool const na_rm = true) { 
-  // Check that the dimensions of the input are correct
-  arma::uword const n = x.n_cols;
-  arma::uword const d = x.n_rows;
-  arma::uword const m = B.n_rows;
-  if (sigma0.n_cols != m || sigma0.n_rows != m) {
-    stop("The dimensions of sigma0 and B do not agree with each other");
-  }
-  if (B.n_cols != n) stop("The dimensions of B and x do not agree with each other");
-  if (B2.n_cols != n || B2.n_rows != d) stop("The dimensions of B2 and x do not agree with each other");
-
-  // Allocate the result
-  arma::vec out(n);
-
-  // Allocate some variables used for computing the log-likelihood
-  arma::uword count;
-  arma::uvec good_index(d);
-  arma::mat sigma(d, d);
-  arma::vec z(d);
-
-  // Loop over all the columns of x and compute log-likelihood terms
-  for (arma::uword i = 0; i < n; ++i) {
-    z = x.col(i);
-
-    // Compute sigma using the ith column of B
-    sigma = sigma_func2(A, B.col(i), B2.col(i), sigma0, nugget);
 
     if (na_rm) {
       // Count all the elements of z that are not NA

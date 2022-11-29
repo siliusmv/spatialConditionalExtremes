@@ -45,7 +45,3 @@ dconditional <- function(x, A, B, sigma0, nugget, logd = TRUE, na_rm = TRUE) {
     .Call(`_spatialConditionalExtremes_dconditional`, x, A, B, sigma0, nugget, logd, na_rm)
 }
 
-dconditional2 <- function(x, A, B, B2, sigma0, nugget, logd = TRUE, na_rm = TRUE) {
-    .Call(`_spatialConditionalExtremes_dconditional2`, x, A, B, B2, sigma0, nugget, logd, na_rm)
-}
-
