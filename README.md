@@ -1,3 +1,5 @@
+This repository contains the code used for creating all the results in the paper CONTINUE!!!
+
 # Setup
 
 Start by calling 
@@ -21,8 +23,8 @@ need to change the C compiler `GCC` (by default equal to `gcc-12`) in the makefi
 # Running the code
 
 All scripts for reproducing the results found in the paper are available in the `exec/`
-folder. This folder contains three subfolders: `simulation-studies/`, `case-study/` and
-`tests/`. 
+folder. This folder contains two subfolders: `case_study/` and
+`tests/`, and the script `simulation_study.R`
 
 ## The `case-study/` folder
 
@@ -30,92 +32,39 @@ The `case-study/` folder contains all the scripts necessary for reproducing the 
 case-study in the paper. The scripts are enumerated to show the suggested order they should be
 executed in. The case-study scripts are:
 
-- `1-download-data.R`  
+- `download_data.R`  
   This script downloads all the data needed for running the case study. It is not strictly
   necessary to run this script, as the processed data are already available in the file
   `inst/extdata/downloads/radar.rds`.
-- `2-process-data.R`  
-  This script processes the data from `1-download-data.R` to create the file
+- `process_data.R`  
+  This script processes the data from `download_data.R` to create the file
   `inst/extdata/downloads/radar.rds`. It also creates a map plot containing the data used for
   the case study, found in the file `inst/extdata/images/height-map.jpg`.
-- `3-examine-marginal-distributions.R`  
-  In this script, the marginal empirical cumulative distributions functions of the radar data are
-  computed using sliding aggregation windows of different sizes. Different quantiles of the
-  empirical marginals are then plotted for all locations, to examine properties of the different 
-  aggregation sizes. The plots are saved in the file
-  `inst/extdata/images/marginal-distributions.pdf`.
-- `4-model-selection.R`  
-  In this script, the model selection from Section 5.3 of the paper is performed. Results of the
-  model selection are displayed in the files `inst/extdata/images/model-selection1.pdf` and
-  `inst/extdata/images/model-selection2.pdf`. 
-- `5-final-modelling.R`  
-  In this script, the inference and model evaluation described in Sections 5.4 and 5.5 of the paper
-  are performed. All model fits are saved in the file `inst/extdata/results/final-modelling.rds`,
-  and all the log-scores are saved in the file
-  `inst/extdata/results/final-modelling-log-scores.rds`. In addition, several different plots are
+- `case_study.R`  
+  In this script, the inference and model evaluation described in Section 6 of the paper
+  are performed. All results of the script are saved in the file `inst/extdata/results/case-study.rds`.
+  In addition, several different plots are
   created and saved in the `inst/extdata/images/` folder. These are the files
-  `design-of-experiment.pdf`, `case-study-densities.pdf`, `case-study-densities2.pdf` and
-  `log-score-rankings.pdf`.
+  `case-study_bad_properties.pdf`, `case-study_posteriors.pdf` and `case-study_properties.pdf`.
   
-## The `simulation-studies/` folder
+## The `simulation_study.R` script
 
-The `simulation-studies/` folder contains all scripts for running the simulation studies described
-in the paper. The scripts are enumerated to show the suggested order they should be executed
-in. The simulation-study scripts are:
-
-- `1-univariate-gaussian.R`  
-  This script contains the code for running the simulation study described in Section 4.1 of the
-  paper. It also contains the code for creating the table of coverage percentages displayed in that
-  Section. The results of the simulation study are stored in the file
-  `inst/extdata/results/univariate-gaussian.rds`.
-- `2-low-rank.R`  
-  This script contains the code for running the simulation study described in Section 4.2 of the
-  paper. It also contains the code for creating the table of coverage percentages displayed in that
-  Section. The results of the simulation study are stored in the file
-  `inst/extdata/results/low-rank.rds`.
-- `3-block-likelihood.R`  
-  This script contains the code for running the simulation study described in Section 4.3 of the
-  paper. It also contains the code for creating the table of coverage percentages displayed in that
-  Section. The results of the simulation study are stored in the file
-  `inst/extdata/results/block-likelihood.rds`.
-- `4-conditional-extremes-parameter-recovery.R`  
-  This script contains the code for evaluating the ability to recover parameters from simulated data
-  with the implemented conditional extremes model in `R-INLA` (see Section 4.4 of the paper). The
-  script depends on the results of the case study in `case-study/5-final-modelling.R`. Results of
-  the simulation study are saved in the file `inst/extdata/results/parameter-recovery.rds`. 
-- `5-conditional-extremes-adjustment.R`  
-  This script contains the code for completing the simulation study described in Section 4.4 of the
-  paper, and for creating the table of coverage percentages displayed in that Section. The
-  script depends on the results of the case study in `case-study/5-final-modelling.R`. Results of
-  the simulation study are saved in the two files `inst/extdata/results/conditional-theta-star.rds`
-  and `inst/extdata/results/conditional-adjustment.rds`. 
-- `6-gaussian-conditional-extremes.R`  
-  This script contains the code for fitting the conditional extremes model to observations from a
-  spatial Gaussian random field, and then evaluating frequency properties of unadjusted and
-  adjusted posteriors. Results of the simulation study are saved in the file
-  `inst/extdata/results/gaussian-conditional-extremes.rds`.
-- `7-conditional-extremes-fixed-rho_b.R`  
-  This script is almost a replicate of `5-conditional-extremes-adjustment.R`, but we fix `rho_b`
-  instead of computing its posterior. The results of the simulation study are saved in the file
-  `inst/extdata/results/conditional-adjustment-fixed-rho_b.rds`.
-- `8-self-inconsistency.R`  
-  This script demonstrates the problems that are caused by the lack of self-consistency of the
-  conditional extremes model, as described in Appendix B of the paper.
-- `9-constraining-Z.R`  
-  This script estimates the correlation structure of a random field that has been constrained by
-  subtraction, using Monte Carlo estimation. The estimated correlation structure is saved in the
-  file `inst/extdata/images/constrained-correlation.pdf`.
+This script contains all the code for the simulation study of Section 5 of the paper.
+All results of the script are saved in the file `inst/extdata/results/simulation.rds`.
+In addition, several different plots are
+created and saved in the `inst/extdata/images/` folder. These are the files
+`design-of-experiment.pdf`, `simulation-posteriors.pdf` and `simulation-properties.pdf`.
 
 ## The `tests/` folder
 
 The `tests/` folder contains two scripts for demonstrating that the implemented `Rcpp`-functions and
 `inla.cgeneric`-functions work as they should. The test scripts are:
 
-- `1-rcpp.R`  
+- `rcpp.R`  
   This script demonstrates that our implemented `Rcpp` functions for computing the log-likelihood of
   the spatial conditional extremes model are both correct and faster than plain `R` functions for
   computing the same thing.
-- `2-cgeneric.R`  
+- `cgeneric.R`  
   This script demonstrates the correctness of the implemented `cgeneric` functions used for computing
   the precision matrix of the SPDE approximation, by comparing the precision matrix created by the
   `cgeneric` functions with that created using the `INLA::inla.spde2.precision()` function in `R`.
