@@ -187,3 +187,111 @@ extract_extreme_fields = function(data,
 
   res
 }
+
+
+#' @export
+empirical_chi = function(data, thresholds, unique_dist) {
+  n_big = matrix(0, length(unique_dist), length(thresholds))
+  n_all = matrix(0, length(unique_dist), length(thresholds))
+  pb = progress_bar(length(data$y))
+  for (j in seq_along(data$y)) {
+    dist = round(data$dist_to_s0[[j]])
+    for (d in seq_along(unique_dist)) {
+      d_index = which(unique_dist[d] == dist)
+      if (!any(d_index)) next
+      for (i in seq_along(thresholds)) {
+        y0_index = which(data$y0[[j]] > thresholds[i])
+        if (!any(y0_index)) next
+        n_big[d, i] = n_big[d, i] +
+          sum(data$y[[j]][d_index, y0_index] > thresholds[i], na.rm = TRUE)
+        n_all[d, i] = n_all[d, i] +
+          sum(!is.na(data$y[[j]][d_index, y0_index]))
+      }
+    }
+    pb$tick()
+  }
+  pb$terminate()
+  chi = n_big / n_all
+  attr(chi, "thresholds") = thresholds
+  attr(chi, "unique_dist") = unique_dist
+  chi
+}
+
+plot_chi = function(chi) {
+  t = attr(chi, "thresholds")
+  unique_dist = attr(chi, "unique_dist")
+  data.frame(
+    chi = as.numeric(rbind(1, chi)),
+    dist = rep(c(0, unique_dist), length(t)),
+    t = rep(t, each = length(unique_dist) + 1)) |>
+    ggplot() +
+    geom_line(aes(x = dist, y = chi, group = t, col = t))
+}
+
+#' @export
+empirical_moments = function(data, unique_dist, unique_y0) {
+  y_sum = matrix(0, length(unique_dist), length(unique_y0))
+  y_sq_sum = matrix(0, length(unique_dist), length(unique_y0))
+  y_n = matrix(0, length(unique_dist), length(unique_y0))
+  pb = progress_bar(length(data$y))
+  for (j in seq_along(data$y)) {
+    dist = round(data$dist_to_s0[[j]])
+    y0 = round(data$y0[[j]], 1)
+    for (d in seq_along(unique_dist)) {
+      d_index = which(unique_dist[d] == dist)
+      if (!any(d_index)) next
+      for (i in seq_along(unique_y0)) {
+        y0_index = which(y0 == unique_y0[i])
+        if (!any(y0_index)) next
+        y_sum[d, i] = y_sum[d, i] + sum(data$y[[j]][d_index, y0_index], na.rm = TRUE)
+        y_sq_sum[d, i] = y_sq_sum[d, i] + sum(data$y[[j]][d_index, y0_index]^2, na.rm = TRUE)
+        y_n[d, i] = y_n[d, i] + sum(!is.na(data$y[[j]][d_index, y0_index]))
+      }
+    }
+    pb$tick()
+  }
+  pb$terminate()
+  y_mean = y_sum / y_n
+  y_sq_mean = y_sq_sum / y_n
+  y_sd = sqrt(y_sq_mean - y_mean^2)
+  res = list(mean = y_mean, sd = y_sd)
+  attr(res, "unique_dist") = unique_dist
+  attr(res, "unique_y0") = unique_y0
+  res
+}
+
+plot_moments = function(x) {
+  unique_dist = attr(x, "unique_dist")
+  unique_y0 = attr(x, "unique_y0")
+  sd_plot = data.frame(
+    sd = as.numeric(rbind(0, x$sd)),
+    dist = rep(c(0, unique_dist), length(unique_y0)),
+    y0 = rep(unique_y0, each = length(unique_dist) + 1)) |>
+    ggplot() +
+    geom_line(aes(x = dist, y = sd, group = y0, col = y0))
+  mean_plot = data.frame(
+    mean = as.numeric(rbind(unique_y0, x$mean)),
+    dist = rep(c(0, unique_dist), length(unique_y0)),
+    y0 = rep(unique_y0, each = length(unique_dist) + 1)) |>
+    ggplot() +
+    geom_line(aes(x = dist, y = mean, group = y0, col = y0))
+  list(mean = mean_plot, sd = sd_plot)
+}
+
+#' @export
+get_s0_index = function(coords, delta_s0 = 1) {
+  stopifnot(all(as.integer(delta_s0) == delta_s0))
+  x_coords = coords[, 1] |> unique() |> sort()
+  y_coords = coords[, 2] |> unique() |> sort()
+  s0_locs = expand.grid(
+    x = x_coords[seq(delta_s0, length(x_coords), by = delta_s0)],
+    y = y_coords[seq(delta_s0, length(y_coords), by = delta_s0)]) |>
+    as.matrix()
+  s0_index = lapply(
+    X = 1:nrow(s0_locs),
+    FUN = function(i) which(coords[, 1] == s0_locs[i, 1] & coords[, 2] == s0_locs[i, 2]))
+  s0_index = s0_index[sapply(s0_index, length) > 0] |>
+    unlist() |>
+    unname()
+  s0_index
+}
