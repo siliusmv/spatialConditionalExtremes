@@ -19,6 +19,10 @@ make_cgeneric("all")
 in order to compile and link the necessary `cgeneric` models. Before calling this function, you might
 need to change the C compiler `GCC` (by default equal to `gcc-12`) in the makefile
 `cgeneric/Makefile` to a compiler that is available on your system.
+In order to run the script for downloading all data from the online repositories (which is not
+strictly necessary), you must first
+install the Climate Data Operators (CDO) program. This is freely available at
+[https://code.mpimet.mpg.de/projects/cdo](https://code.mpimet.mpg.de/projects/cdo).
 
 # Running the code
 

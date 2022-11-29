@@ -37,6 +37,7 @@ data_matrix = raster::as.matrix(data)
 colnames(data_matrix) = NULL
 data_matrix = t(data_matrix)
 
+# Save the results
 mydata = list(
   data = data_matrix,
   coords = coords,
@@ -73,6 +74,7 @@ bbox2 = st_bbox(coords) |>
 rissa = st_point(c(10.203845, 63.690527)) |>
   st_sfc(crs = 4326)
 
+# Plot everything
 jpeg(file.path(image_dir(), "height-map.jpg"))
 plot(tmp, axes = TRUE, reset = FALSE, nbreaks = 25, main = "")
 plot(bbox2, lwd = 5, add = TRUE)

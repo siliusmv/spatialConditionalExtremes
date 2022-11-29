@@ -27,6 +27,7 @@ qlaplace = function(p) {
   res
 }
 
+#' The CDF of the Laplace distribution
 #' @export
 plaplace = function(x) {
   res = x

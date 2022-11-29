@@ -189,6 +189,15 @@ extract_extreme_fields = function(data,
 }
 
 
+#' Compute the empirical estimators of χ_p(d) for a set of
+#' threshold values and distances.
+#' Function input:
+#' - data is a list of data on the same format as that created by
+#'   the function extract_extreme_fields().
+#' - thresholds is a vector of threshold values used for estimating
+#'   the extremal correlation coefficient.
+#' - unique_dist is an integer vector of distances d for which we
+#'   should estimate χ_p(d)
 #' @export
 empirical_chi = function(data, thresholds, unique_dist) {
   n_big = matrix(0, length(unique_dist), length(thresholds))
@@ -217,6 +226,7 @@ empirical_chi = function(data, thresholds, unique_dist) {
   chi
 }
 
+#' @export
 plot_chi = function(chi) {
   t = attr(chi, "thresholds")
   unique_dist = attr(chi, "unique_dist")
@@ -228,6 +238,15 @@ plot_chi = function(chi) {
     geom_line(aes(x = dist, y = chi, group = t, col = t))
 }
 
+#' Compute the empirical estimators of the first two conditional moments of a dataset
+#' for a set of threshold exceedances and distances.
+#' Function input:
+#' - data is a list of data on the same format as that created by
+#'   the function extract_extreme_fields().
+#' - unique_dist is an integer vector of distances d for which we
+#'   should estimate the conditional moments μ(d; y_0) and ζ(d; y_0)
+#' - unique_y0 is a vector of threshold exceedances y0 for which we
+#'   should estimate the conditional moments μ(d; y_0) and ζ(d; y_0)
 #' @export
 empirical_moments = function(data, unique_dist, unique_y0) {
   y_sum = matrix(0, length(unique_dist), length(unique_y0))
@@ -260,6 +279,7 @@ empirical_moments = function(data, unique_dist, unique_y0) {
   res
 }
 
+#' @export
 plot_moments = function(x) {
   unique_dist = attr(x, "unique_dist")
   unique_y0 = attr(x, "unique_y0")
@@ -278,6 +298,8 @@ plot_moments = function(x) {
   list(mean = mean_plot, sd = sd_plot)
 }
 
+#' Given a matrix of coordinates, return a sub-grid of the coordinates
+#' with resolution (delta_s0 x delta_s0)
 #' @export
 get_s0_index = function(coords, delta_s0 = 1) {
   stopifnot(all(as.integer(delta_s0) == delta_s0))
