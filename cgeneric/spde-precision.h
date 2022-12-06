@@ -5,8 +5,8 @@
 #define Calloc(n, type)  (type *) calloc(n, sizeof(type))
 #define Malloc(n, type)  (type *) malloc(n * sizeof(type))
 
-// Compute the precision matrix of the SPDE approximation, and possibly
-// condition on the value at the s0_index.
+// Compute the precision matrix of the SPDE approximation, and
+// condition on the value at the s0_index if s0_index >= 0
 // This is a modified version of the R function INLA::inla.spde2.precision()
 inla_cgeneric_smat_tp spde_precision(double log_rho,
 				     double log_sigma,
