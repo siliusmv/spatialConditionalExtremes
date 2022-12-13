@@ -74,8 +74,8 @@ thresholds = qlaplace(p)
 delta_s0 = 2
 s0_index = get_s0_index(coords, delta_s0)
 
-# This describes how to remove some of the observations far away from the conditioning site
-# to give more weight to close-by observations
+# This variable describes how to remove some of the observations far away from the conditioning site
+# to give more weight to close-by observations, in the function extract_extreme_fields()
 thinning = c(1, 2, 4, 8, 16)
 
 # Extract data from all time points where we observe a threshold exceedance at one of our

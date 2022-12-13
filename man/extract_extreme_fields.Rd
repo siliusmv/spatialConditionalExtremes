@@ -24,7 +24,7 @@ s0_index: a vector of indices describing which of the d coordinates are chosen
 as conditioning sites.
 threshold: The threshold t for the conditional extremes model.
 n, r: Used for only extracting a subset of the observations in a circle around
-the conditioning site. See the docs for extract_thinned_out_circles for more info.
+the conditioning site. See the docs for extract_thinned_out_circles() for more info.
 }
 \details{
 The output of the function is a list where each element is a list or vector

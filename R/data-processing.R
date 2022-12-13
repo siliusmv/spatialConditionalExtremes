@@ -28,14 +28,13 @@ aggregated_ecdf = function(data, coords, center, radius, zero_threshold = 0) {
 #' center: One (x, y) tuple of coordinates, explaining the center of the circles we
 #'   wish to extract.
 #' n: A vector of densities for the different circles we wish to extract. If the ith
-#'   value of n is k, then we only keep every kth of the original coords, both in
-#'   the x-direction and in the y-direction.
+#'   value of n is k, then we only keep every kth of the original x-coordinates, and every
+#'   kth of the original y-coordinates.
 #' r: A vector of radii for the different circles we wish to extract. If e.g.
 #'   n = (1, 3) and r = (2, 5), then we will extract every coordinate that is closer
-#'   to the center than a radius of 2. Then, we will only keep every 3rd coordinate,
-#'   both in x-direction and y-direction, for all coordinates that have a distance
-#'   between 2 and 5 from the center. Finally, all coords that are further away from
-#'   the center than 5 will be dropped.
+#'   to the center than a radius of 2. Then, we will only keep every 3rd x- and y-coordinates,
+#'   for all coordinates that have a distance between 2 and 5 from the center.
+#'   Finally, all coords that are further away from the center than 5 will be dropped.
 #' index_only: A bool describing if the function should return the extracted
 #'   coordinates, or only their indices inside the coords object.
 #' @export
@@ -93,7 +92,6 @@ extract_thinned_out_circles = function(coords,
 #' Search through data after threshold exceedances at a set of conditioning sites.
 #' Extract relevant information and observations for each of the threshold exceedances.
 #'
-#'
 #' The input variables are:
 #' data: An (n x d)-dimensional matrix of observations.
 #' coords: A (d x 2)-dimensional matrix with the coordinates of the data.
@@ -101,8 +99,7 @@ extract_thinned_out_circles = function(coords,
 #'   as conditioning sites.
 #' threshold: The threshold t for the conditional extremes model.
 #' n, r: Used for only extracting a subset of the observations in a circle around
-#'   the conditioning site. See the docs for extract_thinned_out_circles for more info.
-#'
+#'   the conditioning site. See the docs for extract_thinned_out_circles() for more info.
 #'
 #' The output of the function is a list where each element is a list or vector
 #' of length equal, containing these variables:
@@ -226,6 +223,7 @@ empirical_chi = function(data, thresholds, unique_dist) {
   chi
 }
 
+#' Plot the estimates of χ_p(d), created using the empirical_chi() function
 #' @export
 plot_chi = function(chi) {
   t = attr(chi, "thresholds")
@@ -279,6 +277,7 @@ empirical_moments = function(data, unique_dist, unique_y0) {
   res
 }
 
+# Plot empirical moments created using the empirical_moments() function
 #' @export
 plot_moments = function(x) {
   unique_dist = attr(x, "unique_dist")
