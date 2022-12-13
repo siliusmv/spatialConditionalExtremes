@@ -13,10 +13,6 @@ b.so: b.c cgeneric.h $(spde_helpers)
 	$(GCC) -Wall -fpic -O -c -o b.o b.c -lm
 	$(GCC) -shared -o b.so b.o -lm
 
-test: test1.c test2.c smat-operations.o spde-precision.o test-funcs.o cgeneric.h
-	$(GCC) -o test1.o test1.c smat-operations.o spde-precision.o test-funcs.o -lm
-	$(GCC) -o test2.o test2.c smat-operations.o spde-precision.o test-funcs.o -lm
-
 %.o: %.c %.h
 	$(GCC) -Wall -fpic -O -c -o $@ $< -lm
 
