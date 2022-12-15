@@ -17,7 +17,7 @@ double * spde_b_model_simulation(inla_cgeneric_cmd_tp cmd,
   // Assert that all the input variables look as they shold
   // ==========================================================
 
-  // Number of observations
+  // Size of the latent field
   assert(!strcmp(data->ints[0]->name, "n"));
   int n = data->ints[0]->ints[0];
   assert(n > 0);
@@ -290,7 +290,7 @@ double * spde_b_model_case_study(inla_cgeneric_cmd_tp cmd,
   // Assert that all the input variables look as they shold
   // ==========================================================
 
-  // Number of observations
+  // Size of the latent field
   assert(!strcmp(data->ints[0]->name, "n"));
   int n = data->ints[0]->ints[0];
   assert(n > 0);
