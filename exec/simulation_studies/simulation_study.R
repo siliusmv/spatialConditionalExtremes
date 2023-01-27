@@ -12,7 +12,6 @@ library(purrr)
 # Compile and link all the cgeneric scripts, if this has not already been done
 make_cgeneric("all")
 
-n_repl = 300 # Number of replications of the experiments
 n_cores = 8 # Run code in parallel (this might be too many cores for you)
 threshold = qlaplace(.999) # The threshold t for defining the conditional extremes model
 rho = 40 # Range of the Matérn correlation
