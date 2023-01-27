@@ -159,7 +159,7 @@ double * spde_b_model_simulation(inla_cgeneric_cmd_tp cmd,
       int count = 0;
       for (int i = 0; i < n_repl; ++i) {
 	for (int j = 0; j < data->doubles[dist_start + s0_index[i]]->len; ++j) {
-	  b_inv.x[count] = pow(y0[s0_index[i]], -unique_beta_vals[s0_index[i]][j]);
+	  b_inv.x[count] = pow(y0[i], -unique_beta_vals[s0_index[i]][j]);
 	  ++count;
 	}
       }
