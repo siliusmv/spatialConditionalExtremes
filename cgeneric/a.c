@@ -7,7 +7,7 @@
 #include "cgeneric.h"
 
 #define Calloc(n, type)  (type *) calloc(n, sizeof(type))
-#define Malloc(n, type)  (type *) malloc(n * sizeof(type))
+#define Malloc(n, type)  (type *) malloc((n) * sizeof(type))
 
 double * a_model(inla_cgeneric_cmd_tp cmd,
 		 double * theta,

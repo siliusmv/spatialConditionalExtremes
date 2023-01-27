@@ -3,7 +3,7 @@
 #include "cgeneric.h"
 
 #define Calloc(n, type)  (type *) calloc(n, sizeof(type))
-#define Malloc(n, type)  (type *) malloc(n * sizeof(type))
+#define Malloc(n, type)  (type *) malloc((n) * sizeof(type))
 
 // Compute the precision matrix of the SPDE approximation, and
 // condition on the value at the s0_index if s0_index >= 0

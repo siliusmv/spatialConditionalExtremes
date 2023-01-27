@@ -3,7 +3,7 @@
 #include "cgeneric.h"
 
 #define Calloc(n, type)  (type *) calloc(n, sizeof(type))
-#define Malloc(n, type)  (type *) malloc(n * sizeof(type))
+#define Malloc(n, type)  (type *) malloc((n) * sizeof(type))
 
 // Create a sparse matrix that equals the sum A + B of the two sparse
 // matrices A and B
