@@ -12,7 +12,6 @@ library(purrr)
 # Compile and link all the cgeneric scripts, if this has not already been done
 make_cgeneric("all")
 
-n_repl = 300 # Number of replications of the experiments
 n_cores = 8 # Run code in parallel (this might be too many cores for you)
 threshold = qlaplace(.999) # The threshold t for defining the conditional extremes model
 rho = 40 # Range of the Matérn correlation
@@ -74,8 +73,8 @@ thresholds = qlaplace(p)
 delta_s0 = 2
 s0_index = get_s0_index(coords, delta_s0)
 
-# This describes how to remove some of the observations far away from the conditioning site
-# to give more weight to close-by observations
+# This variable describes how to remove some of the observations far away from the conditioning site
+# to give more weight to close-by observations, in the function extract_extreme_fields()
 thinning = c(1, 2, 4, 8, 16)
 
 # Extract data from all time points where we observe a threshold exceedance at one of our

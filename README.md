@@ -1,4 +1,6 @@
-This repository contains the code used for creating all the results in the paper CONTINUE!!!
+This repository contains the code used for creating all the results in the paper "An Efficient
+Workflow for Modelling High-Dimensional Spatial Extremes", available as a preprint on
+[https://arxiv.org/abs/2210.00760](https://arxiv.org/abs/2210.00760).
 
 # Setup
 
@@ -12,7 +14,8 @@ already done so. Then you need to call
 ```r
 devtools::load_all()
 ```
-to compile the Rcpp functions correctly. Finally, you need to call
+to load all `R` functions in the package and to compile and load the `Rcpp` functions
+correctly. Finally, you need to call
 ```r
 make_cgeneric("all")
 ```
@@ -27,14 +30,12 @@ install the Climate Data Operators (CDO) program. This is freely available at
 # Running the code
 
 All scripts for reproducing the results found in the paper are available in the `exec/`
-folder. This folder contains two subfolders: `case_study/` and
-`tests/`, and the script `simulation_study.R`
+folder. This folder contains two subfolders: `case_study/` and `simulation_studies/`.
 
 ## The `case-study/` folder
 
 The `case-study/` folder contains all the scripts necessary for reproducing the results from the
-case-study in the paper. The scripts are enumerated to show the suggested order they should be
-executed in. The case-study scripts are:
+case-study in the paper. The case-study scripts are:
 
 - `download_data.R`  
   This script downloads all the data needed for running the case study. It is not strictly
@@ -51,24 +52,20 @@ executed in. The case-study scripts are:
   created and saved in the `inst/extdata/images/` folder. These are the files
   `case-study_bad_properties.pdf`, `case-study_posteriors.pdf` and `case-study_properties.pdf`.
   
-## The `simulation_study.R` script
+## The `simulation_studies/` folder
 
-This script contains all the code for the simulation study of Section 5 of the paper.
-All results of the script are saved in the file `inst/extdata/results/simulation.rds`.
-In addition, several different plots are
-created and saved in the `inst/extdata/images/` folder. These are the files
-`design-of-experiment.pdf`, `simulation-posteriors.pdf` and `simulation-properties.pdf`.
+The `simulation_studies/` folder contains the scripts necessary for running the two simulation
+studies in the paper. These scripts are:
 
-## The `tests/` folder
-
-The `tests/` folder contains two scripts for demonstrating that the implemented `Rcpp`-functions and
-`inla.cgeneric`-functions work as they should. The test scripts are:
-
-- `rcpp.R`  
-  This script demonstrates that our implemented `Rcpp` functions for computing the log-likelihood of
-  the spatial conditional extremes model are both correct and faster than plain `R` functions for
-  computing the same thing.
-- `cgeneric.R`  
-  This script demonstrates the correctness of the implemented `cgeneric` functions used for computing
-  the precision matrix of the SPDE approximation, by comparing the precision matrix created by the
-  `cgeneric` functions with that created using the `INLA::inla.spde2.precision()` function in `R`.
+- `spde_toy_example.R`  
+  This script contains the code for running the simulation study described in Section S1 of the
+  supplementary material in the paper.
+  It also contains the code for creating the table of coverage percentages displayed in that
+  Section. The results of the simulation study are stored in the file
+  `inst/extdata/results/low-rank.rds`.
+- `simulation_study.R`  
+  This script contains all the code for the simulation study of Section 5 of the paper.
+  All results of the script are saved in the file `inst/extdata/results/simulation.rds`.
+  In addition, several different plots are
+  created and saved in the `inst/extdata/images/` folder. These are the files
+  `design-of-experiment.pdf`, `simulation-posteriors.pdf` and `simulation-properties.pdf`.

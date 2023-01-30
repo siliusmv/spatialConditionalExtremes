@@ -10,14 +10,13 @@ in a regular grid and with a distance-preserving projection.
 center: One (x, y) tuple of coordinates, explaining the center of the circles we
 wish to extract.
 n: A vector of densities for the different circles we wish to extract. If the ith
-value of n is k, then we only keep every kth of the original coords, both in
-the x-direction and in the y-direction.
+value of n is k, then we only keep every kth of the original x-coordinates, and every
+kth of the original y-coordinates.
 r: A vector of radii for the different circles we wish to extract. If e.g.
 n = (1, 3) and r = (2, 5), then we will extract every coordinate that is closer
-to the center than a radius of 2. Then, we will only keep every 3rd coordinate,
-both in x-direction and y-direction, for all coordinates that have a distance
-between 2 and 5 from the center. Finally, all coords that are further away from
-the center than 5 will be dropped.
+to the center than a radius of 2. Then, we will only keep every 3rd x- and y-coordinates,
+for all coordinates that have a distance between 2 and 5 from the center.
+Finally, all coords that are further away from the center than 5 will be dropped.
 index_only: A bool describing if the function should return the extracted
 coordinates, or only their indices inside the coords object.}
 \usage{
@@ -32,14 +31,13 @@ in a regular grid and with a distance-preserving projection.
 center: One (x, y) tuple of coordinates, explaining the center of the circles we
 wish to extract.
 n: A vector of densities for the different circles we wish to extract. If the ith
-value of n is k, then we only keep every kth of the original coords, both in
-the x-direction and in the y-direction.
+value of n is k, then we only keep every kth of the original x-coordinates, and every
+kth of the original y-coordinates.
 r: A vector of radii for the different circles we wish to extract. If e.g.
 n = (1, 3) and r = (2, 5), then we will extract every coordinate that is closer
-to the center than a radius of 2. Then, we will only keep every 3rd coordinate,
-both in x-direction and y-direction, for all coordinates that have a distance
-between 2 and 5 from the center. Finally, all coords that are further away from
-the center than 5 will be dropped.
+to the center than a radius of 2. Then, we will only keep every 3rd x- and y-coordinates,
+for all coordinates that have a distance between 2 and 5 from the center.
+Finally, all coords that are further away from the center than 5 will be dropped.
 index_only: A bool describing if the function should return the extracted
 coordinates, or only their indices inside the coords object.
 }

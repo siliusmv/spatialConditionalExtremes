@@ -176,7 +176,7 @@ loglik = function(theta,
                   sum_terms = TRUE,
                   n_cores = 1) {
   stopifnot(all(sapply(dist_to_s0_from_mesh, min) == 0))
-  
+
   # All model parameters
   tau = exp(theta[1])
   lambda = exp(theta[2])
@@ -719,7 +719,7 @@ chi_plot = local({
     dplyr::mutate(tag = factor(tag, levels = c("Empirical", "Adjusted", "Unadjusted"))) |>
     ggplot() +
     geom_line(aes(x = dist, y = chi, group = p, col = p)) +
-    labs(col = "$p$", y = "$\\chi_p(d)$", x = "$d$") +
+    labs(col = "$p$", y = "$\\widehat \\chi_p(d)$", x = "$d$") +
     scale_color_gradient(
       breaks = c(3.5, 4, 4.5),
       limits = c(3.4, 4.6),

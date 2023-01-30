@@ -3,7 +3,7 @@
 #include "cgeneric.h"
 
 #define Calloc(n, type)  (type *) calloc(n, sizeof(type))
-#define Malloc(n, type)  (type *) malloc(n * sizeof(type))
+#define Malloc(n, type)  (type *) malloc((n) * sizeof(type))
 
 // Create a sparse matrix that equals the sum A + B of the two sparse
 // matrices A and B
@@ -20,7 +20,8 @@ void mat_vec_mult(double * b, inla_cgeneric_mat_tp const * A, double const * x);
 // Compute A * x and place the results in x
 void mat_vec_mult_in_place(inla_cgeneric_mat_tp const * A, double * x);
 
-// Remove column nr. n and row nr. n from the sparse matrix A
+// Remove column nr. n and row nr. n from the sparse matrix A.
+// Do nothing if n < 0
 void remove_col_and_row_from_smat(inla_cgeneric_smat_tp * A, int n);
 
 // This is a struct that describes a diagonal matrix of dimension (dim x dim),
